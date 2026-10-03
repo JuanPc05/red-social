@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SocialProvider } from "./components/SocialContext";
 import MainLayout from "./layouts/MainLayout";
 import FeedPage from "./pages/FeedPage";
@@ -11,9 +11,11 @@ import PostDetailsPage from "./pages/PostDetailsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
+  const Router = import.meta.env.DEV ? BrowserRouter : HashRouter;
+
   return (
     <SocialProvider>
-      <BrowserRouter>
+      <Router>
         <Routes>
           {/* Rutas Públicas */}
           <Route path="/login" element={<LoginPage />} />
@@ -94,7 +96,7 @@ export default function App() {
           {/* Ruta por defecto para URLs no encontradas */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </Router>
     </SocialProvider>
   );
 }
