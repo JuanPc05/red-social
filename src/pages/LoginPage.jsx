@@ -1,11 +1,23 @@
+import { useNavigate } from "react-router-dom";
+import { useSocial } from "./SocialContext";
+
 export default function LoginPage() {
+  const { login } = useSocial();
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault(); // Evitamos que la página se recargue
+    login(); // Llamamos al contexto
+    navigate("/"); // Redirigimos al feed
+  };
+
   return (
     <div className="w3-container w3-content" style={{ maxWidth: 500, marginTop: 100 }}>
       <div className="w3-card-4 w3-round-xlarge w3-white">
         <div className="w3-container w3-theme-d2 w3-round-xlarge w3-padding-16">
           <h2 className="w3-center">Iniciar sesión</h2>
         </div>
-        <form className="w3-container w3-padding-24">
+        <form className="w3-container w3-padding-24" onSubmit={handleLogin}>
           <div className="w3-section">
             <label><i className="fa fa-envelope"></i> Correo electrónico</label>
             <input className="w3-input w3-border w3-round" type="email" placeholder="tu@email.com" required />
