@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { useSocial } from "./SocialContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
-  const { currentUser, notifications } = useSocial();
+  const { currentUser, notifications, logout } = useSocial();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // Previene errores si el Navbar se renderiza fuera del ProtectedRoute sin sesión activa
+  if (!currentUser) return null;
 
   return (
     <>
@@ -43,6 +52,12 @@ export default function Navbar() {
               ))}
             </div>
           </div>
+          
+          {/* Botón Desktop: Cerrar sesión */}
+          <button onClick={handleLogout} className="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Cerrar sesión">
+            <i className="fa fa-sign-out"></i>
+          </button>
+          {/* Botón Desktop: Avatar de la cuenta */}
           <Link to="/perfil" className="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
             <img src={currentUser.avatar} className="w3-circle" style={{ height: 23, width: 23 }} alt="Avatar" />
           </Link>
@@ -53,6 +68,8 @@ export default function Navbar() {
       <div className={`w3-bar-block w3-theme-d2 w3-hide-large w3-hide-medium w3-large ${open ? "w3-show" : "w3-hide"}`} style={{ marginTop: 51 }}>
         <Link to="/" className="w3-bar-item w3-button w3-padding-large">News</Link>
         <Link to="/perfil" className="w3-bar-item w3-button w3-padding-large">My Profile</Link>
+        {/* Botón Mobile: Cerrar sesión */}
+        <button onClick={handleLogout} className="w3-bar-item w3-button w3-padding-large w3-left-align" style={{ width: "100%" }}>Cerrar sesión</button>
       </div>
     </>
   );
