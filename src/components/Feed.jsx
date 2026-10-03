@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getPosts } from "../services/api";
 import { useSocial } from "./SocialContext";
 import Post from "./Post";
 
@@ -36,13 +37,36 @@ function StatusComposer() {
 }
 
 export default function Feed() {
-  const { posts } = useSocial();
+  const { posts, setPosts } = useSocial(); 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Solo cargamos de la API si no hay posts cargados (o si hay 3, que es el mock inicial del contexto)
+    if (posts.length === 0 || posts.length === 3) {
+      setLoading(true);
+      getPosts().then((data) => {
+        setPosts(data);
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
+  }, [posts.length, setPosts]);
+
   return (
     <div className="w3-col m7">
       <StatusComposer />
-      {posts.map((post) => (
-        <Post key={post.id} post={post} />
-      ))}
+      
+      {loading ? (
+        <div className="w3-container w3-card w3-white w3-round w3-margin w3-padding-32 w3-center">
+          <i className="fa fa-spinner fa-spin w3-xxlarge w3-text-theme"></i>
+          <p>Cargando publicaciones...</p>
+        </div>
+      ) : (
+        posts.map((post) => (
+          <Post key={post.id} post={post} />
+        ))
+      )}
     </div>
   );
 }

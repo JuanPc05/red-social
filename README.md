@@ -1,106 +1,61 @@
-# Red Social en React
+# 🎓 Red Social Escolar - React SPA
 
-Trabajo académico del curso **Frontend 2** en el **CESDE**.
+¡Bienvenido al repositorio de nuestra **Red Social Escolar**! 🚀
 
-El objetivo es reconstruir en React la plantilla estática [`plantilla-RedSocial.html`](plantilla-RedSocial.html) (plantilla "Social Media" de W3.CSS), dividiéndola en componentes reutilizables y manejando el estado global de la aplicación con **Context API**.
+Este proyecto representa la migración completa de un conjunto de plantillas estáticas en HTML (basadas en W3.CSS) hacia una moderna **Single Page Application (SPA)** construida con React. Hemos aplicado los mejores estándares de la industria para crear un frontend modular, escalable e interactivo, centrándonos firmemente en la arquitectura.
 
-## Funcionalidades
+---
 
-- Barra de navegación con notificaciones y menú para móvil.
-- Tarjeta de perfil, secciones desplegables (grupos, eventos, fotos), intereses y alerta descartable.
-- Publicar estados nuevos en el feed.
-- Dar "Me gusta" a publicaciones y comentarios.
-- Comentar publicaciones y responder comentarios.
-- Compartir publicaciones: en el propio muro, copiando el enlace o con el menú de compartir del sistema.
-- Aceptar o rechazar solicitudes de amistad.
-- Las publicaciones se guardan en el `localStorage` del navegador.
+## 🏗️ Hitos Arquitectónicos
 
-## Tecnologías
+Este proyecto fue diseñado siguiendo un flujo estricto de desarrollo frontend. Los logros técnicos más destacados incluyen:
 
-- [React 19](https://react.dev/)
-- [Vite](https://vite.dev/)
-- [W3.CSS](https://www.w3schools.com/w3css/) y Font Awesome 4.7 (cargados por CDN en `index.html`)
-- ESLint
+- **🗺️ Enrutamiento Dinámico (SPA):** Implementación de `react-router-dom` para gestionar la navegación sin recargas de página, mejorando drásticamente la experiencia del usuario.
+- **🛡️ Rutas Restringidas (Protected Routes):** Creación de un High-Order Component (`<ProtectedRoute>`) que vigila el acceso a vistas privadas (como el Feed y el Perfil), redirigiendo al `/login` si el usuario no tiene una sesión activa.
+- **🔗 Parámetros de URL Dinámicos:** Configuración de lectura de parámetros en el enrutador (ej. `/perfil/:username`) utilizando `useParams` para renderizar datos filtrados basados en la ruta visitada.
+- **🧩 Aislamiento de Lógica UI:** División estricta entre "Smart Components" (Páginas) y "Dumb Components" (UI pura). Como prueba de esto, implementamos el componente `<ImageCarousel />` que encapsula la lógica de estado local cíclico para las publicaciones con múltiples fotos.
+- **⏳ Consumo Asíncrono Simulado:** Separación de la capa de datos creando el módulo de servicios (`src/services/api.js`). Utilizamos promesas simuladas (`setTimeout`) junto con `useEffect` y estados de carga (`loading`) para replicar el comportamiento del consumo real de un Backend.
 
-## Estructura de carpetas
+---
 
-```
+## 📁 Estructura del Proyecto
+
+Nuestra arquitectura de carpetas está pensada para escalar fácilmente si el proyecto crece:
+
+```text
 red-social/
-├── index.html                 # HTML base: carga W3.CSS, fuentes e íconos por CDN
-├── plantilla-RedSocial.html   # Plantilla original que se clonó
-├── package.json               # Dependencias y scripts
-├── vite.config.js             # Configuración de Vite
-├── eslint.config.js           # Reglas de ESLint
-├── public/                    # Archivos estáticos servidos tal cual (favicon, íconos)
-└── src/
-    ├── main.jsx               # Punto de entrada: monta <App /> en #root
-    ├── App.jsx                # Envuelve todo en <SocialProvider> y arma el layout
-    ├── index.css              # Estilos globales y ajustes sobre W3.CSS
-    ├── assets/                # Imágenes importadas desde el código
-    └── components/
-        ├── SocialContext.jsx  # Contexto global: datos y acciones de la app
-        ├── Navbar.jsx         # Barra superior, notificaciones y menú móvil
-        ├── ProfileSidebar.jsx # Columna izquierda: perfil, acordeón, intereses, alerta
-        ├── Feed.jsx           # Columna central: formulario de estado y lista de posts
-        ├── Post.jsx           # Una publicación con likes y comentarios
-        ├── ShareButton.jsx    # Botón y menú para compartir una publicación
-        ├── RightSidebar.jsx   # Columna derecha: evento, solicitudes de amistad, anuncios
-        └── Footer.jsx         # Pie de página
+├── muestra/                   # 📄 Archivos HTML originales (Referencia de diseño estático).
+├── src/
+│   ├── components/            # 🧱 "Dumb Components" y componentes reusables (Navbar, Post, Carousel, ProtectedRoute, Context).
+│   ├── layouts/               # 🖼️ Contenedores de diseño (MainLayout) que evitan repetir código global.
+│   ├── pages/                 # 🧠 "Smart Components" o Vistas (FeedPage, ProfilePage, LoginPage).
+│   └── services/              # 🔌 Lógica de conexión y consumo de APIs simuladas (api.js).
+│   ├── App.jsx                # 🔀 Orquestador principal y configuración del Router.
+│   └── main.jsx               # ⚛️ Punto de montaje de React.
+└── package.json               # 📦 Dependencias y scripts.
 ```
 
-### Cómo fluyen los datos
+---
 
-`SocialContext.jsx` es el centro de la aplicación. `SocialProvider` guarda el estado (publicaciones, usuario actual, solicitudes de amistad, etc.) y las funciones que lo modifican (`addPost`, `toggleLike`, `toggleShare`, `addComment`, `likeComment`, `acceptFriend`...).
+## 🚀 Instrucciones de Ejecución
 
-Cualquier componente accede a ellos con el hook `useSocial()`:
+Para evaluar y probar este proyecto localmente, asegúrate de tener [Node.js](https://nodejs.org/) instalado y sigue estos pasos en tu terminal:
 
-```jsx
-const { posts, toggleLike } = useSocial();
-```
-
-Así ningún componente necesita recibir datos por props desde `App`, salvo `Post` y `ShareButton`, que reciben la publicación que deben mostrar.
-
-## Cómo ejecutar el proyecto
-
-### Requisitos
-
-- [Node.js](https://nodejs.org/) 20.19 o superior (o 22.12+)
-- npm (viene con Node.js)
-
-### Pasos
-
-1. Clonar el repositorio y entrar a la carpeta:
-
-   ```bash
-   git clone <url-del-repositorio>
-   cd red-social
-   ```
-
-2. Instalar las dependencias:
-
+1. **Instalar dependencias:**
+   Descarga todas las librerías necesarias (incluyendo React Router) ejecutando:
    ```bash
    npm install
    ```
 
-3. Iniciar el servidor de desarrollo:
-
+2. **Iniciar el servidor de desarrollo:**
+   Levanta la aplicación localmente mediante Vite:
    ```bash
    npm run dev
    ```
 
-4. Abrir en el navegador la dirección que muestra la terminal (por defecto `http://localhost:5173`).
+3. **Ver la aplicación:**
+   Abre tu navegador web e ingresa a la dirección indicada por la consola (generalmente `http://localhost:5173`).
 
-### Scripts disponibles
+---
 
-| Comando           | Descripción                                             |
-| ----------------- | ------------------------------------------------------- |
-| `npm run dev`     | Servidor de desarrollo con recarga automática           |
-| `npm run build`   | Genera la versión de producción en la carpeta `dist/`   |
-| `npm run preview` | Sirve localmente la versión generada con `build`        |
-| `npm run lint`    | Revisa el código con ESLint                             |
-
-> Nota: los estilos (W3.CSS, Font Awesome y Open Sans) se cargan desde internet, así que se necesita conexión para que la página se vea correctamente.
-
-## Autor
-
-JuanPc — Frontend 2, CESDE.
+*Desarrollado con 💻 y ☕ como demostración de Arquitectura Frontend Avanzada.*

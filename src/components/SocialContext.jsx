@@ -250,6 +250,7 @@ export function SocialProvider({ children }) {
         likeComment,
         acceptFriend,
         declineFriend,
+        setPosts,
         dismissAlert: () => setShowAlert(false),
       }}
     >

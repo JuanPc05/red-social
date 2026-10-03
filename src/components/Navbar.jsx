@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSocial } from "./SocialContext";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const { currentUser, notifications } = useSocial();
@@ -17,18 +18,18 @@ export default function Navbar() {
           >
             <i className="fa fa-bars"></i>
           </button>
-          <a href="#" className="w3-bar-item w3-button w3-padding-large w3-theme-d4">
+          <Link to="/" className="w3-bar-item w3-button w3-padding-large w3-theme-d4">
             <i className="fa fa-home w3-margin-right"></i>Logo
-          </a>
-          <a href="#" className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News">
+          </Link>
+          <Link to="/" className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News">
             <i className="fa fa-globe"></i>
-          </a>
-          <a href="#" className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings">
+          </Link>
+          <Link to={`/perfil/${currentUser.handle.substring(1)}`} className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings">
             <i className="fa fa-user"></i>
-          </a>
-          <a href="#" className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages">
+          </Link>
+          <Link to="#" className="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages">
             <i className="fa fa-envelope"></i>
-          </a>
+          </Link>
           <div className="w3-dropdown-hover w3-hide-small">
             <button type="button" className="w3-button w3-padding-large" title="Notifications">
               <i className="fa fa-bell"></i>
@@ -42,18 +43,16 @@ export default function Navbar() {
               ))}
             </div>
           </div>
-          <a href="#" className="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+          <Link to="/perfil" className="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
             <img src={currentUser.avatar} className="w3-circle" style={{ height: 23, width: 23 }} alt="Avatar" />
-          </a>
+          </Link>
         </div>
       </div>
 
       {/* Navbar on small screens */}
       <div className={`w3-bar-block w3-theme-d2 w3-hide-large w3-hide-medium w3-large ${open ? "w3-show" : "w3-hide"}`} style={{ marginTop: 51 }}>
-        <a href="#" className="w3-bar-item w3-button w3-padding-large">Link 1</a>
-        <a href="#" className="w3-bar-item w3-button w3-padding-large">Link 2</a>
-        <a href="#" className="w3-bar-item w3-button w3-padding-large">Link 3</a>
-        <a href="#" className="w3-bar-item w3-button w3-padding-large">My Profile</a>
+        <Link to="/" className="w3-bar-item w3-button w3-padding-large">News</Link>
+        <Link to="/perfil" className="w3-bar-item w3-button w3-padding-large">My Profile</Link>
       </div>
     </>
   );

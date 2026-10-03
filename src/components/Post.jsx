@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useSocial } from "./SocialContext";
 import ShareButton from "./ShareButton";
+import { Link } from "react-router-dom";
+import ImageCarousel from "./ImageCarousel";
 
 function CommentForm({ onSubmit, placeholder }) {
   const [text, setText] = useState("");
@@ -75,24 +77,34 @@ export default function Post({ post }) {
     <div id={post.id} className="w3-container w3-card w3-white w3-round w3-margin">
       <br />
       <img src={post.author.avatar} alt="Avatar" className="w3-left w3-circle w3-margin-right" style={{ width: 60 }} />
-      <span className="w3-right w3-opacity">{post.createdAt}</span>
-      <h4>{post.author.name}</h4>
+      <span className="w3-right w3-opacity">
+        <Link to={`/post/${post.id}`} className="w3-hover-text-theme" style={{ textDecoration: "none" }}>{post.createdAt}</Link>
+      </span>
+      <h4>
+        <Link to={`/perfil/${post.author.name}`} style={{ textDecoration: "none" }}>{post.author.name}</Link>
+      </h4>
       <br />
       <hr className="w3-clear" />
       {post.title && <p>{post.title}</p>}
       {post.featuredImage && (
         <img src={post.featuredImage.src} alt={post.featuredImage.alt} style={{ width: "100%" }} className="w3-margin-bottom" />
       )}
-      <p>{post.text}</p>
-      {post.images?.length > 0 && (
-        <div className="w3-row-padding" style={{ margin: "0 -16px" }}>
-          {post.images.map((img, i) => (
-            <div key={i} className="w3-half">
-              <img src={img.src} style={{ width: "100%" }} alt={img.alt} className="w3-margin-bottom" />
-            </div>
-          ))}
-        </div>
+      {post.text && <p>{post.text}</p>}
+      
+      {/* Lógica condicional para las imágenes */}
+      {post.images?.length === 1 && (
+        <img 
+          src={post.images[0].src} 
+          alt={post.images[0].alt} 
+          style={{ width: "100%" }} 
+          className="w3-margin-bottom" 
+        />
       )}
+      
+      {post.images?.length > 1 && (
+        <ImageCarousel images={post.images} />
+      )}
+
       <div className="post-actions w3-margin-bottom">
         <button
           type="button"
