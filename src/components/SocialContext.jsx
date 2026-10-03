@@ -4,13 +4,14 @@ import { getPosts, savePosts } from "../services/api";
 const SocialContext = createContext(null);
 const w3img = (name) => `https://www.w3schools.com/w3images/${name}`;
 
-const currentUser = {
+// Cambiamos el nombre para usarlo como plantilla en la función login()
+const mockUserData = {
   name: "Juan Pablo Castillo",
   handle: "@juanpablocastillo",
   avatar: w3img("avatar3.png"),
   job: "Designer, UI",
-  location: "London, UK",
-  birthday: "April 1, 1988",
+  location: "Medellín, CO",
+  birthday: "February, 5 1994",
 };
 
 const notifications = [
@@ -55,17 +56,26 @@ const initialFriendRequests = [
 ];
 
 export function SocialProvider({ children }) {
+  // Inicializamos el usuario en null para que inicie deslogueado
+  const [currentUser, setCurrentUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [friendRequests, setFriendRequests] = useState(initialFriendRequests);
   const [friends, setFriends] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
 
-  // Inicializar estado asíncrono desde la API simulada (que lee de LocalStorage)
+  // Funciones de Autenticación
+  function login() {
+    setCurrentUser(mockUserData);
+  }
+
+  function logout() {
+    setCurrentUser(null);
+  }
+
   useEffect(() => {
     getPosts().then((data) => setPosts(data));
   }, []);
 
-  // Persistencia: guardar posts a LocalStorage a través de api.js cada vez que cambian
   useEffect(() => {
     if (posts.length > 0) {
       savePosts(posts);
@@ -74,7 +84,7 @@ export function SocialProvider({ children }) {
 
   function addPost(text) {
     const clean = text.trim();
-    if (!clean) return;
+    if (!clean || !currentUser) return; // Aseguramos que haya usuario
     setPosts((items) => {
       const newPosts = [
         {
@@ -90,11 +100,11 @@ export function SocialProvider({ children }) {
         },
         ...items,
       ];
-      // Guardar inmediatamente
       savePosts(newPosts);
       return newPosts;
     });
   }
+
   function toggleLike(id) {
     setPosts((items) =>
       items.map((post) =>
@@ -108,6 +118,7 @@ export function SocialProvider({ children }) {
       ),
     );
   }
+
   function toggleShare(id) {
     setPosts((items) =>
       items.map((post) =>
@@ -121,9 +132,10 @@ export function SocialProvider({ children }) {
       ),
     );
   }
+
   function addComment(postId, text, parentId = null) {
     const clean = text.trim();
-    if (!clean) return;
+    if (!clean || !currentUser) return;
     setPosts((items) =>
       items.map((post) => {
         if (post.id !== postId) return post;
@@ -148,6 +160,7 @@ export function SocialProvider({ children }) {
       }),
     );
   }
+
   function likeComment(postId, commentId, parentId = null) {
     setPosts((items) =>
       items.map((post) => {
@@ -173,11 +186,13 @@ export function SocialProvider({ children }) {
       }),
     );
   }
+
   function acceptFriend(id) {
     const request = friendRequests.find((item) => item.id === id);
     if (request) setFriends((items) => [...items, request]);
     setFriendRequests((items) => items.filter((item) => item.id !== id));
   }
+
   function declineFriend(id) {
     setFriendRequests((items) => items.filter((item) => item.id !== id));
   }
@@ -187,6 +202,8 @@ export function SocialProvider({ children }) {
       value={{
         posts,
         currentUser,
+        login,
+        logout,
         notifications,
         groups,
         interests,
