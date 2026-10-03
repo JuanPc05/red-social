@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { getPosts, savePosts } from "../services/api";
 
 const SocialContext = createContext(null);
-const STORAGE_KEY = "cavynet-posts-v2";
 const w3img = (name) => `https://www.w3schools.com/w3images/${name}`;
 
 const currentUser = {
@@ -12,56 +12,6 @@ const currentUser = {
   location: "London, UK",
   birthday: "April 1, 1988",
 };
-
-const initialPosts = [
-  {
-    id: "post-1",
-    author: { name: "John Doe", avatar: w3img("avatar2.png") },
-    createdAt: "1 min",
-    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    images: [
-      { src: w3img("lights.jpg"), alt: "Northern Lights" },
-      { src: w3img("nature.jpg"), alt: "Nature" },
-    ],
-    likes: 12,
-    comments: [
-      {
-        id: "comment-1",
-        author: "Jane Doe",
-        avatar: w3img("avatar5.png"),
-        text: "Beautiful pictures!",
-        likes: 2,
-        replies: [],
-      },
-    ],
-    liked: false,
-    shared: false,
-  },
-  {
-    id: "post-2",
-    author: { name: "Jane Doe", avatar: w3img("avatar5.png") },
-    createdAt: "16 min",
-    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    images: [],
-    likes: 4,
-    comments: [],
-    liked: false,
-    shared: false,
-  },
-  {
-    id: "post-3",
-    author: { name: "Angie Jane", avatar: w3img("avatar6.png") },
-    createdAt: "32 min",
-    title: "Have you seen this?",
-    text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    featuredImage: { src: w3img("nature.jpg"), alt: "Nature" },
-    images: [],
-    likes: 7,
-    comments: [],
-    liked: false,
-    shared: false,
-  },
-];
 
 const notifications = [
   "One new friend request",
@@ -104,45 +54,46 @@ const initialFriendRequests = [
   { id: "req-1", name: "Jane Doe", avatar: w3img("avatar6.png") },
 ];
 
-function readPosts() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || initialPosts;
-  } catch {
-    return initialPosts;
-  }
-}
-
 export function SocialProvider({ children }) {
-  const [posts, setPosts] = useState(readPosts);
+  const [posts, setPosts] = useState([]);
   const [friendRequests, setFriendRequests] = useState(initialFriendRequests);
   const [friends, setFriends] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
 
+  // Inicializar estado asíncrono desde la API simulada (que lee de LocalStorage)
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-    } catch {
-      // storage unavailable (private mode, quota): keep in-memory state
+    getPosts().then((data) => setPosts(data));
+  }, []);
+
+  // Persistencia: guardar posts a LocalStorage a través de api.js cada vez que cambian
+  useEffect(() => {
+    if (posts.length > 0) {
+      savePosts(posts);
     }
   }, [posts]);
 
   function addPost(text) {
     const clean = text.trim();
     if (!clean) return;
-    setPosts((items) => [
-      {
-        id: `post-${Date.now()}`,
-        author: { name: currentUser.name, avatar: currentUser.avatar },
-        createdAt: "Now",
-        text: clean,
-        images: [],
-        likes: 0,
-        comments: [],
-        liked: false,
-        shared: false,
-      },
-      ...items,
-    ]);
+    setPosts((items) => {
+      const newPosts = [
+        {
+          id: `post-${Date.now()}`,
+          author: { name: currentUser.name, avatar: currentUser.avatar },
+          createdAt: "Just now",
+          text: clean,
+          images: [],
+          likes: 0,
+          comments: [],
+          liked: false,
+          shared: false,
+        },
+        ...items,
+      ];
+      // Guardar inmediatamente
+      savePosts(newPosts);
+      return newPosts;
+    });
   }
   function toggleLike(id) {
     setPosts((items) =>

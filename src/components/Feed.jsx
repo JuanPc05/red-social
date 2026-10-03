@@ -41,17 +41,10 @@ export default function Feed() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Solo cargamos de la API si no hay posts cargados (o si hay 3, que es el mock inicial del contexto)
-    if (posts.length === 0 || posts.length === 3) {
-      setLoading(true);
-      getPosts().then((data) => {
-        setPosts(data);
-        setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
-  }, [posts.length, setPosts]);
+    // SocialContext se encarga ahora de cargar inicialmente de la API/LocalStorage.
+    // Solo mostramos el loading mientras los posts estén vacíos.
+    setLoading(posts.length === 0);
+  }, [posts.length]);
 
   return (
     <div className="w3-col m7">

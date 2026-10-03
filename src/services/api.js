@@ -1,4 +1,5 @@
 const w3img = (name) => `https://www.w3schools.com/w3images/${name}`;
+const STORAGE_KEY = "red-social-posts";
 
 const currentUser = {
   name: "Juan Pablo Castillo",
@@ -37,10 +38,30 @@ const mockPosts = [
   },
 ];
 
+// Leer desde LocalStorage (o devolver mocks si está vacío)
+function getLocalPosts() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error("Error reading from localStorage", e);
+  }
+  return mockPosts;
+}
+
+// Guardar en LocalStorage
+export function savePosts(posts) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  } catch (e) {
+    console.error("Error saving to localStorage", e);
+  }
+}
+
 export function getPosts() {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve([...mockPosts]);
+      resolve(getLocalPosts());
     }, 500);
   });
 }
@@ -48,7 +69,8 @@ export function getPosts() {
 export function getPostById(id) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const post = mockPosts.find((p) => p.id === id);
+      const posts = getLocalPosts();
+      const post = posts.find((p) => p.id === id);
       resolve(post || null);
     }, 500);
   });
@@ -57,7 +79,6 @@ export function getPostById(id) {
 export function getUserProfile(username) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Simula que devuelve el usuario solicitado, o el currentUser si es su perfil
       resolve({ ...currentUser, name: username ? `@${username}` : currentUser.name });
     }, 500);
   });
