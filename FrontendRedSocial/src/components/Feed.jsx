@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getPosts } from "../services/api";
 import { useSocial } from "./SocialContext";
 import Post from "./Post";
 

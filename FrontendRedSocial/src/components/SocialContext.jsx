@@ -46,34 +46,32 @@ export function SocialProvider({ children }) {
     return localStorage.getItem("darkMode") === "true";
   });
   const [posts, setPosts] = useState([]);
-  const [groups, setGroups] = useState([]);
+  const [groups] = useState([
+    {
+      id: "g1",
+      icon: "fa-users",
+      title: "Frontend Developers",
+      text: "Grupo para entusiastas de la web",
+      photos: [w3img("avatar2.png")]
+    },
+    {
+      id: "g2",
+      icon: "fa-code",
+      title: "React Masters",
+      text: "Mejores prácticas en React",
+      photos: [w3img("avatar5.png")]
+    },
+    {
+      id: "g3",
+      icon: "fa-laptop",
+      title: "Tech News",
+      text: "Noticias y tendencias de la industria",
+      photos: [w3img("avatar6.png")]
+    }
+  ]);
   const [friendRequests, setFriendRequests] = useState(initialFriendRequests);
   const [friends, setFriends] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
-
-  // Cargar grupos desde la API
-  useEffect(() => {
-    async function fetchGroups() {
-      try {
-        const res = await fetch("http://localhost:3000/api/grupos");
-        if (res.ok) {
-          const data = await res.json();
-          // Mapeamos para encajar en la UI (asumimos icon fa-circle-o-notch por defecto y text)
-          const formatGroups = data.map(g => ({
-            id: g.id,
-            icon: "fa-circle-o-notch",
-            title: g.nombre,
-            text: g.descripcion,
-            photos: g.imagen_url ? [g.imagen_url] : null
-          }));
-          setGroups(formatGroups);
-        }
-      } catch (err) {
-        console.error("Error fetching groups:", err);
-      }
-    }
-    fetchGroups();
-  }, []);
 
   function toggleDarkMode() {
     setIsDarkMode((prev) => {
