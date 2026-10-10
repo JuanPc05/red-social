@@ -124,27 +124,34 @@ export function SocialProvider({ children }) {
     getPosts().then((data) => setPosts(data));
   }, []);
 
-  function addPost(text) {
+  async function addPost(text) {
     const clean = text.trim();
-    if (!clean || !currentUser) return; // Aseguramos que haya usuario
-    setPosts((items) => {
-      const newPosts = [
-        {
-          id: `post-${Date.now()}`,
-          author: { name: currentUser.name, avatar: currentUser.avatar },
-          createdAt: "Just now",
-          text: clean,
-          images: [],
-          likes: 0,
-          comments: [],
-          liked: false,
-          shared: false,
-        },
-        ...items,
-      ];
-      savePosts(newPosts);
-      return newPosts;
-    });
+    if (!clean || !currentUser) return;
+
+    try {
+      const res = await fetch("http://localhost:3000/api/publicaciones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuario_id: currentUser.id,
+          texto: clean,
+          imagen_url: null
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const postsFromServer = await getPosts();
+        setPosts(postsFromServer);
+      } else {
+        alert("Error al crear publicación: " + (data.error || data.msg));
+        console.error("Error al crear publicación:", data);
+      }
+    } catch (err) {
+      alert("Error de red: " + err.message);
+      console.error(err);
+    }
   }
 
   function toggleLike(id) {

@@ -3,14 +3,14 @@ const bcrypt = require('bcryptjs');
 
 // Registro de usuario (registro.html)
 exports.registrarUsuario = async (req, res) => {
-    const { nombre, email, contrasena, fecha_nacimiento, genero } = req.body;
+    const { nombre, email, contrasena } = req.body;
     try {
         // Encriptar contraseña (10 rondas de sal)
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(contrasena, salt);
 
-        const query = 'INSERT INTO usuarios (nombre, email, contrasena, fecha_nacimiento, genero) VALUES (?, ?, ?, ?, ?)';
-        await db.query(query, [nombre, email, passwordHash, fecha_nacimiento, genero]);
+        const query = 'INSERT INTO usuarios (nombre, email, contrasena) VALUES (?, ?, ?)';
+        await db.query(query, [nombre, email, passwordHash]);
 
         res.status(201).json({ msg: "Usuario registrado con éxito" });
     } catch (err) {
